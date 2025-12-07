@@ -793,7 +793,9 @@ Nega bizni tanlashadi?
         await ctx.reply('Gilam maydonini m² da kiriting:');
       } else if (order.category == Services.MEBEL) {
         order.step = 'awaiting_quantity';
-        await ctx.reply(`1 ta o'rindiq soni`);
+        await ctx.reply(
+          `Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`,
+        );
       } else {
         order.step = 'awaiting_quantity';
         await ctx.reply('Nechta dona? Kiriting:');
