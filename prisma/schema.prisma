@@ -1,0 +1,113 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  telegramId String    @unique
+  phone      String?
+  fullName   String?
+  createdAt  DateTime  @default(now())
+
+  orders     Order[]
+}
+
+model Order {
+  id          Int          @id @default(autoincrement())
+  userId      Int?
+  address     String?
+  fullName    String?
+  phone       String?
+  comment     String?
+  regionId   Int?
+  status      OrderStatus  @default(PENDING)
+  createdAt   DateTime     @default(now())
+
+  user        User?        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id         Int     @id @default(autoincrement())
+  orderId    Int
+  tariffId   Int
+  area       Float
+  price      Float
+  regionId   Int
+  
+
+  order      Order   @relation(fields: [orderId], references: [id])
+  tariff     Tariff  @relation(fields: [tariffId], references: [id])
+  region Regions  @relation(fields: [regionId],references: [id])
+}
+
+
+model Tariff {
+  id           Int             @id @default(autoincrement())
+  serviceName  String
+  description  String?
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  category    Services 
+
+  history      TariffHistory[]
+  orderItems   OrderItem[]
+  regions      TariffRegion[]  @relation("TariffToTariffRegion")
+}
+
+model TariffRegion {
+  id        Int     @id @default(autoincrement())
+  tariffId  Int
+  regionId  Int
+  pricePerM2 Float
+
+  tariff  Tariff  @relation(fields: [tariffId], references: [id], name: "TariffToTariffRegion")
+  region  Regions @relation(fields: [regionId], references: [id], name: "RegionToTariffRegion")
+}
+
+model Regions {
+  id            Int             @id @default(autoincrement())
+  name          String      @unique
+  tariffRegions TariffRegion[]  @relation("RegionToTariffRegion")
+  OrderItem OrderItem[]  
+}
+
+
+
+model TariffHistory {
+  id           Int       @id @default(autoincrement())
+  tariffId     Int
+  oldPrice     Float
+  newPrice     Float
+  changedAt    DateTime  @default(now())
+
+  tariff       Tariff    @relation(fields: [tariffId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING     // buyurtma qo‘yilgan
+  PROCESSING  // ishlanmoqda
+  DONE        // bajarilgan
+  CANCELLED   // bekor qilingan
+}
+
+
+
+enum Services{
+  GILAM
+  ODEYAL
+  PARDA
+  KORPACHA
+  MEBEL
+  BRUSCHATKA
+  BASSEYN
+  FASAD
+
+}
