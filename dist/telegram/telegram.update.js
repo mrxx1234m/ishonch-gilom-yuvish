@@ -222,7 +222,7 @@ Nega bizni tanlashadi?
         const buttons = regions.map((r) => [
             { text: r.name, callback_data: `region_${r.id}` },
         ]);
-        await ctx.reply('Iltimos, hududingizni tanlang! 👇🏻', {
+        await ctx.reply(`Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`, {
             reply_markup: { inline_keyboard: buttons },
         });
     }
@@ -256,7 +256,7 @@ Nega bizni tanlashadi?
             await ctx.reply('❗ Tarif topilmadi.');
             return;
         }
-        const totalPrice = (tariffRegion.pricePerM2 ?? 0) * (order.area ?? 1);
+        const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
         const createdOrder = await this.prisma.order.create({
             data: {
                 userId: user?.id,
@@ -270,7 +270,7 @@ Nega bizni tanlashadi?
                     create: [
                         {
                             tariffId: tariffRegion.tariff.id,
-                            area: order.area || 0,
+                            area: order.quantity || 0,
                             price: totalPrice,
                             regionId: order.regionId || 1,
                         },
@@ -305,13 +305,19 @@ Nega bizni tanlashadi?
         switch (order.step) {
             case 'awaiting_area': {
                 const area = parseFloat(text);
-                order.step = 'awaiting_service';
-                const services = await this.prisma.tariff.findMany({
-                    where: { isActive: true },
-                    select: { id: true, serviceName: true },
+                if (isNaN(area) || area <= 0) {
+                    return await ctx.reply('❗️ Iltimos, to‘g‘ri maydon (m²) kiriting.');
+                }
+                order.area = area;
+                order.step = 'awaiting_quantity';
+                const services = await this.prisma.tariffRegion.findMany({
+                    include: { tariff: true },
                 });
                 const buttons = services.map((s) => [
-                    { text: s.serviceName, callback_data: `service_${s.id}` },
+                    {
+                        text: `${s.tariff.serviceName} - ${s.pricePerM2}`,
+                        callback_data: `service_${s.id}`,
+                    },
                 ]);
                 await ctx.reply('Qaysi xizmatni tanlaysiz?', {
                     reply_markup: { inline_keyboard: buttons },
@@ -407,7 +413,7 @@ Nega bizni tanlashadi?
                 });
                 if (!tariffRegion)
                     return await ctx.reply('❗️ Xizmat topilmadi.');
-                const totalPrice = (order.quantity || 0) * tariffRegion.pricePerM2;
+                const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
                 if (order.category == client_1.Services.BASSEYN ||
                     client_1.Services.PARDA == order.category ||
                     order.category == client_1.Services.BRUSCHATKA ||
@@ -436,7 +442,7 @@ Nega bizni tanlashadi?
                             create: [
                                 {
                                     tariffId: tariffRegion.tariff.id,
-                                    area: order.area || 0,
+                                    area: order.quantity || 0,
                                     price: totalPrice,
                                     regionId: order.regionId || 1,
                                 },
@@ -490,7 +496,7 @@ Nega bizni tanlashadi?
                 await ctx.reply('❗ Tarif yoki xizmat narxi topilmadi.');
                 return;
             }
-            const totalPrice = (order.quantity ?? 0) * (tariffRegion.pricePerM2 ?? 0);
+            const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
             const orderList = [
                 user.id,
                 order.fullName,
@@ -513,7 +519,7 @@ Nega bizni tanlashadi?
                         create: [
                             {
                                 tariffId: tariffRegion.tariff.id,
-                                area: order.area ?? 0,
+                                area: order.quantity ?? 0,
                                 price: totalPrice,
                                 regionId: order.regionId,
                             },
@@ -618,7 +624,7 @@ Nega bizni tanlashadi?
         });
         if (!tariffRegion)
             return await ctx.reply('❗️ Xizmat topilmadi.');
-        const totalPrice = (order.quantity || 0) * tariffRegion.pricePerM2;
+        const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
         const orderList = [
             user.id,
             order.fullName,
@@ -640,7 +646,7 @@ Nega bizni tanlashadi?
                     create: [
                         {
                             tariffId: tariffRegion.tariff.id,
-                            area: order.area || 0,
+                            area: order.quantity || 0,
                             price: totalPrice,
                             regionId: order.regionId || 1,
                         },

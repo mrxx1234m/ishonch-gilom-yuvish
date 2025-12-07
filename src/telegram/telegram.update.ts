@@ -295,9 +295,12 @@ Nega bizni tanlashadi?
       { text: r.name, callback_data: `region_${r.id}` },
     ]);
 
-    await ctx.reply('Iltimos, hududingizni tanlang! 👇🏻', {
-      reply_markup: { inline_keyboard: buttons },
-    });
+    await ctx.reply(
+      `Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`,
+      {
+        reply_markup: { inline_keyboard: buttons },
+      },
+    );
   }
   /** LOCATION SENDING */
 
@@ -356,7 +359,8 @@ Nega bizni tanlashadi?
     }
 
     // hisoblash pricePerM2 * area
-    const totalPrice = (tariffRegion.pricePerM2 ?? 0) * (order.area ?? 1);
+    const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+
 
     // BUYURTMANI SAQLAYMIZ
     const createdOrder = await this.prisma.order.create({
@@ -372,7 +376,7 @@ Nega bizni tanlashadi?
           create: [
             {
               tariffId: tariffRegion.tariff.id,
-              area: order.area || 0,
+              area: order.quantity || 0,
               price: totalPrice,
               regionId: order.regionId || 1,
             },
@@ -418,25 +422,31 @@ Nega bizni tanlashadi?
       /** STEP 1: AREA */
       case 'awaiting_area': {
         const area = parseFloat(text);
-        order.step = 'awaiting_service';
+        if (isNaN(area) || area <= 0) {
+          return await ctx.reply('❗️ Iltimos, to‘g‘ri maydon (m²) kiriting.');
+        }
 
-        const services = await this.prisma.tariff.findMany({
-          where: { isActive: true },
-          select: { id: true, serviceName: true },
+        order.area = area; // faqat area saqlaymiz
+        order.step = 'awaiting_quantity';
+
+        const services = await this.prisma.tariffRegion.findMany({
+          include: { tariff: true },
         });
 
         const buttons = services.map((s) => [
-          { text: s.serviceName, callback_data: `service_${s.id}` },
+          {
+            text: `${s.tariff.serviceName} - ${s.pricePerM2}`,
+            callback_data: `service_${s.id}`,
+          },
         ]);
 
         await ctx.reply('Qaysi xizmatni tanlaysiz?', {
           reply_markup: { inline_keyboard: buttons },
         });
 
-        /** SERVICE SELECT */
-
         break;
       }
+
       /** STEP: QUANTITY OR AREA */
       case 'awaiting_quantity': {
         const quantity = parseFloat(text);
@@ -555,7 +565,7 @@ Nega bizni tanlashadi?
 
         if (!tariffRegion) return await ctx.reply('❗️ Xizmat topilmadi.');
 
-        const totalPrice = (order.quantity || 0) * tariffRegion.pricePerM2;
+        const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
         if (
           order.category == Services.BASSEYN ||
           Services.PARDA == order.category ||
@@ -575,6 +585,8 @@ Nega bizni tanlashadi?
           new Date(),
         ];
         await this.googleSheets.writeOrders(orderList);
+        
+
 
         const createdOrder = await this.prisma.order.create({
           data: {
@@ -588,7 +600,7 @@ Nega bizni tanlashadi?
               create: [
                 {
                   tariffId: tariffRegion.tariff.id,
-                  area: order.area || 0,
+                  area: order.quantity || 0,
                   price: totalPrice,
                   regionId: order.regionId || 1,
                 },
@@ -663,7 +675,7 @@ Nega bizni tanlashadi?
       }
 
       // Endi TypeScript bu yerga kelganimizda tariffRegion 100% bor deb hisoblaydi
-      const totalPrice = (order.quantity ?? 0) * (tariffRegion.pricePerM2 ?? 0);
+      const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
       const orderList = [
         user.id,
         order.fullName,
@@ -688,7 +700,7 @@ Nega bizni tanlashadi?
             create: [
               {
                 tariffId: tariffRegion.tariff.id,
-                area: order.area ?? 0,
+                area: order.quantity ?? 0,
                 price: totalPrice,
                 regionId: order.regionId,
               },
@@ -833,7 +845,7 @@ Nega bizni tanlashadi?
 
     if (!tariffRegion) return await ctx.reply('❗️ Xizmat topilmadi.');
 
-    const totalPrice = (order.quantity || 0) * tariffRegion.pricePerM2;
+    const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
     const orderList = [
       user.id,
       order.fullName,
@@ -844,6 +856,7 @@ Nega bizni tanlashadi?
       new Date(),
     ];
     await this.googleSheets.writeOrders(orderList);
+    
 
     // ORDER
     const createdOrder = await this.prisma.order.create({
@@ -857,7 +870,7 @@ Nega bizni tanlashadi?
           create: [
             {
               tariffId: tariffRegion.tariff.id,
-              area: order.area || 0,
+              area: order.quantity || 0,
               price: totalPrice,
               regionId: order.regionId || 1,
             },
