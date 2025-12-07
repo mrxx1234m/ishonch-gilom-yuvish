@@ -16,6 +16,7 @@ interface OrderSession {
   phone?: string;
   address?: string;
   comment?: string;
+  service?:String
 }
 
 
@@ -295,12 +296,9 @@ Nega bizni tanlashadi?
       { text: r.name, callback_data: `region_${r.id}` },
     ]);
 
-    await ctx.reply(
-      `Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`,
-      {
-        reply_markup: { inline_keyboard: buttons },
-      },
-    );
+    await ctx.reply(`Iltimos, xizmat turini tanlang! 👇🏻`, {
+      reply_markup: { inline_keyboard: buttons },
+    });
   }
   /** LOCATION SENDING */
 
@@ -385,15 +383,16 @@ Nega bizni tanlashadi?
       },
       include: { items: true },
     });
-    const orderList = [
-      user?.id,
-      order.fullName,
-      order.phone,
-      order.address,
-      tariffRegion.tariff.serviceName,
-      totalPrice,
-      new Date(),
-    ];
+  const orderList = [
+        order.fullName,
+        order.phone,
+        order.address,
+        order.category,
+        tariffRegion.tariff.serviceName,
+        order.quantity || 0,
+        totalPrice,
+        new Date(),
+      ];
     await this.googleSheets.writeOrders(orderList);
 
     await ctx.reply(
@@ -575,15 +574,15 @@ Nega bizni tanlashadi?
         ) {
         }
 
-        const orderList = [
-          user.id,
-          order.fullName,
-          order.phone,
-          order.address,
-          tariffRegion.tariff.serviceName,
-          totalPrice,
-          new Date(),
-        ];
+      const orderList = [
+        order.fullName,
+        order.phone,
+        order.address,
+        tariffRegion.tariff.serviceName,
+        order.quantity || 0,
+        totalPrice,
+        new Date(),
+      ];
         await this.googleSheets.writeOrders(orderList);
         
 
@@ -676,12 +675,14 @@ Nega bizni tanlashadi?
 
       // Endi TypeScript bu yerga kelganimizda tariffRegion 100% bor deb hisoblaydi
       const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+    
       const orderList = [
-        user.id,
         order.fullName,
         order.phone,
         order.address,
         tariffRegion.tariff.serviceName,
+        order.
+        order.quantity || 0,
         totalPrice,
         new Date(),
       ];
@@ -736,6 +737,7 @@ Nega bizni tanlashadi?
       await ctx.reply('Iltimos, xizmat turini tanlang! 👇🏻', {
         reply_markup: { inline_keyboard: servicesButtons },
       });
+      order.service = ctx.text
       return;
     }
     /** CATEGORY TANLASH */
@@ -849,13 +851,14 @@ Nega bizni tanlashadi?
 
     const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
     const orderList = [
-      user.id,
       order.fullName,
       order.phone,
       order.address,
       tariffRegion.tariff.serviceName,
+      order.quantity || 0,
       totalPrice,
       new Date(),
+      
     ];
     await this.googleSheets.writeOrders(orderList);
     

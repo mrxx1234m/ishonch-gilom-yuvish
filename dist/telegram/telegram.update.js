@@ -222,7 +222,7 @@ Nega bizni tanlashadi?
         const buttons = regions.map((r) => [
             { text: r.name, callback_data: `region_${r.id}` },
         ]);
-        await ctx.reply(`Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`, {
+        await ctx.reply(`Iltimos, xizmat turini tanlang! 👇🏻`, {
             reply_markup: { inline_keyboard: buttons },
         });
     }
@@ -280,11 +280,12 @@ Nega bizni tanlashadi?
             include: { items: true },
         });
         const orderList = [
-            user?.id,
             order.fullName,
             order.phone,
             order.address,
+            order.category,
             tariffRegion.tariff.serviceName,
+            order.quantity || 0,
             totalPrice,
             new Date(),
         ];
@@ -421,11 +422,11 @@ Nega bizni tanlashadi?
                     order.category == client_1.Services.GILAM) {
                 }
                 const orderList = [
-                    user.id,
                     order.fullName,
                     order.phone,
                     order.address,
                     tariffRegion.tariff.serviceName,
+                    order.quantity || 0,
                     totalPrice,
                     new Date(),
                 ];
@@ -498,11 +499,12 @@ Nega bizni tanlashadi?
             }
             const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
             const orderList = [
-                user.id,
                 order.fullName,
                 order.phone,
                 order.address,
                 tariffRegion.tariff.serviceName,
+                order.
+                    order.quantity || 0,
                 totalPrice,
                 new Date(),
             ];
@@ -545,6 +547,7 @@ Nega bizni tanlashadi?
             await ctx.reply('Iltimos, xizmat turini tanlang! 👇🏻', {
                 reply_markup: { inline_keyboard: servicesButtons },
             });
+            order.service = ctx.text;
             return;
         }
         if (order.step === 'awaiting_category' && data.startsWith('category_')) {
@@ -589,7 +592,7 @@ Nega bizni tanlashadi?
             }
             else if (order.category == client_1.Services.MEBEL) {
                 order.step = 'awaiting_quantity';
-                await ctx.reply(`1 ta o'rindiq soni`);
+                await ctx.reply(`Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`);
             }
             else {
                 order.step = 'awaiting_quantity';
@@ -626,11 +629,11 @@ Nega bizni tanlashadi?
             return await ctx.reply('❗️ Xizmat topilmadi.');
         const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
         const orderList = [
-            user.id,
             order.fullName,
             order.phone,
             order.address,
             tariffRegion.tariff.serviceName,
+            order.quantity || 0,
             totalPrice,
             new Date(),
         ];
