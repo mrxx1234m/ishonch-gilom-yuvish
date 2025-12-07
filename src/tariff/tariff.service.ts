@@ -14,7 +14,7 @@ export class TariffService {
         serviceName: createTariffDto.serviceName,
         description: createTariffDto.description,
         isActive: createTariffDto.isActive ?? true,
-        category:createTariffDto.category,
+        category: createTariffDto.category,
         regions: {
           create: createTariffDto.regions.map((r) => ({
             regionId: r.regionId,
@@ -83,8 +83,15 @@ export class TariffService {
 
   // DELETE (hard delete)
   async remove(id: number) {
-    await this.findOne(id);
-    return this.prisma.tariff.delete({ where: { id } });
+    // 1️⃣ Bog‘langan TariffRegion yozuvlarini o'chirish
+    await this.prisma.tariffRegion.deleteMany({
+      where: { tariffId: id },
+    });
+
+    // 2️⃣ Tariff yozuvini o'chirish
+    return this.prisma.tariff.delete({
+      where: { id },
+    });
   }
 
   // DEACTIVATE
