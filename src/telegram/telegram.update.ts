@@ -391,7 +391,8 @@ Nega bizni tanlashadi?
         tariffRegion.tariff.serviceName,
         order.quantity || 0,
         totalPrice,
-        new Date(),
+        new Date().toLocaleString('uz-UZ', {timeZone: 'Asia/Tashkent',})
+
       ];
     await this.googleSheets.writeOrders(orderList);
 
@@ -581,7 +582,7 @@ Nega bizni tanlashadi?
         tariffRegion.tariff.serviceName,
         order.quantity || 0,
         totalPrice,
-        new Date(),
+        new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
       ];
         await this.googleSheets.writeOrders(orderList);
         
@@ -681,10 +682,9 @@ Nega bizni tanlashadi?
         order.phone,
         order.address,
         tariffRegion.tariff.serviceName,
-        order.
-        order.quantity || 0,
+        order.order.quantity || 0,
         totalPrice,
-        new Date(),
+        new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
       ];
       await this.googleSheets.writeOrders(orderList);
 
@@ -857,8 +857,7 @@ Nega bizni tanlashadi?
       tariffRegion.tariff.serviceName,
       order.quantity || 0,
       totalPrice,
-      new Date(),
-      
+      new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
     ];
     await this.googleSheets.writeOrders(orderList);
     

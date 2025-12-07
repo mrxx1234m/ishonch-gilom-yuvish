@@ -7,10 +7,10 @@ export declare class OrderController {
         totalPrice: number;
         user: {
             id: number;
-            fullName: string | null;
-            phone: string | null;
-            createdAt: Date;
             telegramId: string;
+            phone: string | null;
+            fullName: string | null;
+            createdAt: Date;
         } | null;
         items: ({
             tariff: {
@@ -24,29 +24,29 @@ export declare class OrderController {
         } & {
             id: number;
             regionId: number;
+            orderId: number;
+            tariffId: number;
             area: number;
             price: number;
-            tariffId: number;
-            orderId: number;
         })[];
         id: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        phone: string | null;
+        fullName: string | null;
+        createdAt: Date;
         userId: number | null;
         address: string | null;
-        fullName: string | null;
-        phone: string | null;
         comment: string | null;
         regionId: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        createdAt: Date;
     }[]>;
     findOne(id: string): Promise<{
         totalPrice: number;
         user: {
             id: number;
-            fullName: string | null;
-            phone: string | null;
-            createdAt: Date;
             telegramId: string;
+            phone: string | null;
+            fullName: string | null;
+            createdAt: Date;
         } | null;
         items: ({
             tariff: {
@@ -60,57 +60,57 @@ export declare class OrderController {
         } & {
             id: number;
             regionId: number;
+            orderId: number;
+            tariffId: number;
             area: number;
             price: number;
-            tariffId: number;
-            orderId: number;
         })[];
         id: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        phone: string | null;
+        fullName: string | null;
+        createdAt: Date;
         userId: number | null;
         address: string | null;
-        fullName: string | null;
-        phone: string | null;
         comment: string | null;
         regionId: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        createdAt: Date;
     }>;
     updateStatus(id: string, dto: UpdateOrderStatusDto): Promise<{
         user: {
             id: number;
-            fullName: string | null;
-            phone: string | null;
-            createdAt: Date;
             telegramId: string;
+            phone: string | null;
+            fullName: string | null;
+            createdAt: Date;
         } | null;
         items: {
             id: number;
             regionId: number;
+            orderId: number;
+            tariffId: number;
             area: number;
             price: number;
-            tariffId: number;
-            orderId: number;
         }[];
     } & {
         id: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        phone: string | null;
+        fullName: string | null;
+        createdAt: Date;
         userId: number | null;
         address: string | null;
-        fullName: string | null;
-        phone: string | null;
         comment: string | null;
         regionId: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        createdAt: Date;
     }>;
     remove(id: string): Promise<{
         id: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        phone: string | null;
+        fullName: string | null;
+        createdAt: Date;
         userId: number | null;
         address: string | null;
-        fullName: string | null;
-        phone: string | null;
         comment: string | null;
         regionId: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        createdAt: Date;
     }>;
 }
