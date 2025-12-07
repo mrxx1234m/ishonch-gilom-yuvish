@@ -68,7 +68,7 @@ model TariffRegion {
   regionId  Int
   pricePerM2 Float
 
-  tariff  Tariff  @relation(fields: [tariffId], references: [id], name: "TariffToTariffRegion")
+  tariff  Tariff  @relation(fields: [tariffId], references: [id], name: "TariffToTariffRegion",onDelete: Cascade)
   region  Regions @relation(fields: [regionId], references: [id], name: "RegionToTariffRegion")
 }
 
