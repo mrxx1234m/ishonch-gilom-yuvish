@@ -248,10 +248,6 @@ Nega bizni tanlashadi?
         const user = await this.prisma.user.findUnique({
             where: { telegramId: String(ctx.from.id) },
         });
-        if (!user) {
-            await ctx.reply('❗ Foydalanuvchi topilmadi. Iltimos /start ni bosing.');
-            return;
-        }
         const tariffRegion = await this.prisma.tariffRegion.findFirst({
             where: { regionId: order.regionId },
             include: { tariff: true },
@@ -263,7 +259,7 @@ Nega bizni tanlashadi?
         const totalPrice = (tariffRegion.pricePerM2 ?? 0) * (order.area ?? 1);
         const createdOrder = await this.prisma.order.create({
             data: {
-                userId: user.id,
+                userId: user?.id,
                 address: `https://www.google.com/maps?q=${latitude},${longitude}`,
                 fullName: order.fullName,
                 phone: order.phone,
@@ -284,7 +280,7 @@ Nega bizni tanlashadi?
             include: { items: true },
         });
         const orderList = [
-            user.id,
+            user?.id,
             order.fullName,
             order.phone,
             order.address,
@@ -336,7 +332,7 @@ Nega bizni tanlashadi?
                 if (!text)
                     return await ctx.reply('❗️ Ism va familiya kiriting.');
                 order.fullName = text;
-                order.step = 'awaiting_phone';
+                order.step = 'awaiting_address';
                 await ctx.reply('Telefon raqamingizni kiriting:');
                 break;
             case 'awaiting_phone':
@@ -353,6 +349,7 @@ Nega bizni tanlashadi?
                 });
                 break;
             case 'awaiting_address':
+                order.phone = text;
                 order.step = 'awaiting_address_input';
                 await ctx.reply('Iltimos, manzilingizni kiriting yoki hozirgi joylashuvingizni yuboring:', {
                     reply_markup: {

@@ -80,8 +80,12 @@ let TariffService = class TariffService {
         });
     }
     async remove(id) {
-        await this.findOne(id);
-        return this.prisma.tariff.delete({ where: { id } });
+        await this.prisma.tariffRegion.deleteMany({
+            where: { tariffId: id },
+        });
+        return this.prisma.tariff.delete({
+            where: { id },
+        });
     }
     async deactivate(id) {
         await this.findOne(id);

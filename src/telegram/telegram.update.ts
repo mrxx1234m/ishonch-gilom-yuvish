@@ -339,10 +339,10 @@ Nega bizni tanlashadi?
       where: { telegramId: String(ctx.from.id) },
     });
 
-    if (!user) {
-      await ctx.reply('❗ Foydalanuvchi topilmadi. Iltimos /start ni bosing.');
-      return;
-    }
+    // if (!user) {
+    //   await ctx.reply('❗ Foydalanuvchi topilmadi. Iltimos /start ni bosing.');
+    //   return;
+    // }
 
     // TARIF REGION
     const tariffRegion = await this.prisma.tariffRegion.findFirst({
@@ -361,7 +361,7 @@ Nega bizni tanlashadi?
     // BUYURTMANI SAQLAYMIZ
     const createdOrder = await this.prisma.order.create({
       data: {
-        userId: user.id,
+        userId: user?.id ,
         address: `https://www.google.com/maps?q=${latitude},${longitude}`,
         fullName: order.fullName,
         phone: order.phone,
@@ -382,7 +382,7 @@ Nega bizni tanlashadi?
       include: { items: true },
     });
     const orderList = [
-      user.id,
+      user?.id,
       order.fullName,
       order.phone,
       order.address,
@@ -453,14 +453,12 @@ Nega bizni tanlashadi?
       case 'awaiting_fullName':
         if (!text) return await ctx.reply('❗️ Ism va familiya kiriting.');
         order.fullName = text;
-        order.step = 'awaiting_phone';
+        order.step = 'awaiting_address';
         await ctx.reply('Telefon raqamingizni kiriting:');
         break;
 
       /** STEP 3: PHONE */
       case 'awaiting_phone':
-        
-
         order.phone = text;
         order.step = 'awaiting_address';
 
@@ -481,8 +479,8 @@ Nega bizni tanlashadi?
       /** STEP 4: ADDRESS */
       /** STEP 4: ADDRESS */
       case 'awaiting_address':
+        order.phone = text;
         order.step = 'awaiting_address_input';
-
         await ctx.reply(
           'Iltimos, manzilingizni kiriting yoki hozirgi joylashuvingizni yuboring:',
           {
