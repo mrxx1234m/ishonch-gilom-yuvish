@@ -372,18 +372,34 @@ Nega bizni tanlashadi?
     }
 
     // hisoblash pricePerM2 * area
-    const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+    // area / quantity ni ishonchli olish
+    const area = Number(order.area ?? order.quantity ?? 0);
+    if (isNaN(area) || area <= 0) {
+      await ctx.reply(
+        '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
+      );
+      return;
+    }
 
+    // pricePerM2 ni son sifatida oling
+    const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
+    if (isNaN(pricePerM2) || pricePerM2 < 0) {
+      await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
+      return;
+    }
+
+    // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+    const totalPrice = Math.round(area * pricePerM2);
 
     // BUYURTMANI SAQLAYMIZ
     const createdOrder = await this.prisma.order.create({
       data: {
-        userId: user?.id ,
+        userId: user?.id,
         address: `https://www.google.com/maps?q=${latitude},${longitude}`,
         fullName: order.fullName,
         phone: order.phone,
         comment: order.comment,
-        telegramId:String(ctx?.from.id),
+        telegramId: String(ctx?.from.id),
         regionId: order.regionId,
         status: 'PENDING',
         items: {
@@ -399,17 +415,16 @@ Nega bizni tanlashadi?
       },
       include: { items: true },
     });
-  const orderList = [
-        order.fullName,
-        order.phone,
-        order.address,
-        order.category,
-        tariffRegion.tariff.serviceName,
-        order.quantity || 0,
-        totalPrice,
-        new Date().toLocaleString('uz-UZ', {timeZone: 'Asia/Tashkent',})
-
-      ];
+    const orderList = [
+      order.fullName,
+      order.phone,
+      order.address,
+      order.category,
+      tariffRegion.tariff.serviceName,
+      order.quantity || 0,
+      totalPrice,
+      new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
+    ];
     await this.googleSheets.writeOrders(orderList);
 
     await ctx.reply(
@@ -581,7 +596,27 @@ Nega bizni tanlashadi?
 
         if (!tariffRegion) return await ctx.reply('❗️ Xizmat topilmadi.');
 
-        const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+        // area / quantity ni ishonchli olish
+        const area = Number(order.area ?? order.quantity ?? 0);
+        if (isNaN(area) || area <= 0) {
+          await ctx.reply(
+            '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
+          );
+          return;
+        }
+
+        // pricePerM2 ni son sifatida oling
+        const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
+        if (isNaN(pricePerM2) || pricePerM2 < 0) {
+          await ctx.reply(
+            '❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.',
+          );
+          return;
+        }
+
+        // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+        const totalPrice = Math.round(area * pricePerM2);
+
         if (
           order.category == Services.BASSEYN ||
           Services.PARDA == order.category ||
@@ -591,18 +626,16 @@ Nega bizni tanlashadi?
         ) {
         }
 
-      const orderList = [
-        order.fullName,
-        order.phone,
-        order.address,
-        tariffRegion.tariff.serviceName,
-        order.quantity || 0,
-        totalPrice,
-        new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
-      ];
+        const orderList = [
+          order.fullName,
+          order.phone,
+          order.address,
+          tariffRegion.tariff.serviceName,
+          order.quantity || 0,
+          totalPrice,
+          new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
+        ];
         await this.googleSheets.writeOrders(orderList);
-        
-
 
         const createdOrder = await this.prisma.order.create({
           data: {
@@ -691,9 +724,25 @@ Nega bizni tanlashadi?
         return;
       }
 
-      // Endi TypeScript bu yerga kelganimizda tariffRegion 100% bor deb hisoblaydi
-      const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
-    
+      // area / quantity ni ishonchli olish
+      const area = Number(order.area ?? order.quantity ?? 0);
+      if (isNaN(area) || area <= 0) {
+        await ctx.reply(
+          '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
+        );
+        return;
+      }
+
+      // pricePerM2 ni son sifatida oling
+      const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
+      if (isNaN(pricePerM2) || pricePerM2 < 0) {
+        await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
+        return;
+      }
+
+      // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+      const totalPrice = Math.round(area * pricePerM2);
+
       const orderList = [
         order.fullName,
         order.phone,
@@ -810,7 +859,7 @@ Nega bizni tanlashadi?
         order.category == Services.GILAM
       ) {
         order.step = 'awaiting_quantity';
-        await ctx.reply('Gilam maydonini m² da kiriting:');
+        await ctx.reply(`${order.category} maydonini m² da kiriting:`);
       } else if (order.category == Services.MEBEL) {
         order.step = 'awaiting_quantity';
         await ctx.reply(
@@ -867,7 +916,25 @@ Nega bizni tanlashadi?
 
     if (!tariffRegion) return await ctx.reply('❗️ Xizmat topilmadi.');
 
-    const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+    // area / quantity ni ishonchli olish
+    const area = Number(order.area ?? order.quantity ?? 0);
+    if (isNaN(area) || area <= 0) {
+      await ctx.reply(
+        '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
+      );
+      return;
+    }
+
+    // pricePerM2 ni son sifatida oling
+    const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
+    if (isNaN(pricePerM2) || pricePerM2 < 0) {
+      await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
+      return;
+    }
+
+    // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+    const totalPrice = Math.round(area * pricePerM2);
+
     const orderList = [
       order.fullName,
       order.phone,
@@ -878,7 +945,6 @@ Nega bizni tanlashadi?
       new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
     ];
     await this.googleSheets.writeOrders(orderList);
-    
 
     // ORDER
     const createdOrder = await this.prisma.order.create({
