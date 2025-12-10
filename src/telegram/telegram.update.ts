@@ -76,11 +76,11 @@ export class TelegramUpdate {
   @Start()
   async start(@Ctx() ctx: Context) {
     await ctx.reply(
-      ` Assalomu alaykum, hurmatli mijoz! 🙂
+      ` Assalomu alaykum, ${ctx.from?.first_name}! 🙂
 
-Sizni bizning xizmat botimizda ko‘rib turganimizdan xursandmiz.
+Xizmat botimizda ko‘rib turganimizdan xursandmiz.
 
-Xizmatlar bilan tanishish yoki buyurtma berish uchun  menyudan foydalaning 👇
+Buyurtma beish uchun menyudan foydalaning! 👇
 `,
       {
         reply_markup: {
@@ -190,7 +190,7 @@ Operatorlarimiz sizning murojaatingizni imkon qadar tezda ko‘rib chiqadi va yo
       { text: region.name, callback_data: `prices_region_${region.id}` },
     ]);
 
-    await ctx.reply('Iltimos, hududni tanlang! 👇🏻', {
+    await ctx.reply('Hududingizni tanlang! 👇🏻', {
       reply_markup: {
         inline_keyboard: buttons,
       },
