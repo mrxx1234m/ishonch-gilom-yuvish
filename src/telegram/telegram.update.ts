@@ -136,7 +136,7 @@ Operatorlarimiz sizning murojaatingizni imkon qadar tezda ko‘rib chiqadi va yo
 
     // Userning barcha buyurtmalarini olish
     const orders = await this.prisma.order.findMany({
-      where: { userId: user.id },
+      where: { telegramId: telegramId },
       include: {
         items: {
           include: {
@@ -384,6 +384,7 @@ Nega bizni tanlashadi?
         fullName: order.fullName,
         phone: order.phone,
         comment: order.comment,
+        telegramId:String(ctx?.from.id),
         regionId: order.regionId,
         status: 'PENDING',
         items: {
@@ -610,6 +611,7 @@ Nega bizni tanlashadi?
             address: order.address,
             fullName: order.fullName,
             phone: order.phone,
+            telegramId: String(ctx?.from.id),
             comment: order.comment,
             status: 'PENDING',
             items: {
@@ -711,6 +713,7 @@ Nega bizni tanlashadi?
           address: order.address,
           fullName: order.fullName,
           phone: order.phone,
+          telegramId: String(ctx?.from.id),
           comment: null,
           status: 'PENDING',
           items: {
@@ -885,6 +888,7 @@ Nega bizni tanlashadi?
         address: order.address,
         fullName: order.fullName,
         phone: order.phone,
+        telegramId: String(ctx?.from.id),
         status: 'PENDING',
         items: {
           create: [

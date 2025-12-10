@@ -26,6 +26,7 @@ model Order {
   fullName    String?
   phone       String?
   comment     String?
+  telegramId String?
   regionId   Int?
   status      OrderStatus  @default(PENDING)
   createdAt   DateTime     @default(now())
