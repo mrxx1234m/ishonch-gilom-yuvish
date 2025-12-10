@@ -867,15 +867,15 @@ Nega bizni tanlashadi?
         order.category == Services.GILAM
       ) {
         order.step = 'awaiting_quantity';
-        await ctx.reply(`${order.category} maydonini m² da kiriting:`);
+        await ctx.reply(`Qancha kvadrat bor? Kiritinbg: `);
       } else if (order.category == Services.MEBEL) {
         order.step = 'awaiting_quantity';
         await ctx.reply(
-          `Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`,
+          `Nechta o'rindiq bor? Kiriting:`,
         );
       } else {
         order.step = 'awaiting_quantity';
-        await ctx.reply('Nechta dona? Kiriting:');
+        await ctx.reply('Nechta dona bor? Kiriting:');
       }
 
       return;
