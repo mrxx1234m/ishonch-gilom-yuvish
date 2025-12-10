@@ -372,23 +372,24 @@ Nega bizni tanlashadi?
     }
 
     // hisoblash pricePerM2 * area
-    // area / quantity ni ishonchli olish
-    const area = Number(order.area ?? order.quantity ?? 0);
+    // MAYDONNI TO‘G‘RI OLISh
+    const area = Number(String(order.quantity).trim());
+
+    // VALIDATSIYA
     if (isNaN(area) || area <= 0) {
-      await ctx.reply(
-        '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
-      );
+      await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
       return;
     }
 
-    // pricePerM2 ni son sifatida oling
-    const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
-    if (isNaN(pricePerM2) || pricePerM2 < 0) {
+    // TARIF NARXINI SON SIFATIDA OLISh
+    const pricePerM2 = Number(tariffRegion.pricePerM2);
+
+    if (isNaN(pricePerM2) || pricePerM2 <= 0) {
       await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
       return;
     }
 
-    // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+    // UMUMIY NARX HISOBI
     const totalPrice = Math.round(area * pricePerM2);
 
     // BUYURTMANI SAQLAYMIZ
@@ -597,24 +598,26 @@ Nega bizni tanlashadi?
         if (!tariffRegion) return await ctx.reply('❗️ Xizmat topilmadi.');
 
         // area / quantity ni ishonchli olish
-        const area = Number(order.area ?? order.quantity ?? 0);
+        // MAYDONNI TO‘G‘RI OLISh
+        const area = Number(String(order.quantity).trim());
+
+        // VALIDATSIYA
         if (isNaN(area) || area <= 0) {
-          await ctx.reply(
-            '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
-          );
+          await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
           return;
         }
 
-        // pricePerM2 ni son sifatida oling
-        const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
-        if (isNaN(pricePerM2) || pricePerM2 < 0) {
+        // TARIF NARXINI SON SIFATIDA OLISh
+        const pricePerM2 = Number(tariffRegion.pricePerM2);
+
+        if (isNaN(pricePerM2) || pricePerM2 <= 0) {
           await ctx.reply(
             '❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.',
           );
           return;
         }
 
-        // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+        // UMUMIY NARX HISOBI
         const totalPrice = Math.round(area * pricePerM2);
 
         if (
@@ -725,24 +728,28 @@ Nega bizni tanlashadi?
       }
 
       // area / quantity ni ishonchli olish
-      const area = Number(order.area ?? order.quantity ?? 0);
+      // MAYDONNI TO‘G‘RI OLISh
+      const area = Number(String(order.quantity).trim());
+
+      // VALIDATSIYA
       if (isNaN(area) || area <= 0) {
-        await ctx.reply(
-          '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
-        );
+        await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
         return;
       }
 
-      // pricePerM2 ni son sifatida oling
-      const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
-      if (isNaN(pricePerM2) || pricePerM2 < 0) {
+      // TARIF NARXINI SON SIFATIDA OLISh
+      const pricePerM2 = Number(tariffRegion.pricePerM2);
+
+      if (isNaN(pricePerM2) || pricePerM2 <= 0) {
         await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
         return;
       }
 
-      // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+      // UMUMIY NARX HISOBI
       const totalPrice = Math.round(area * pricePerM2);
 
+      // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+      
       const orderList = [
         order.fullName,
         order.phone,
@@ -917,22 +924,24 @@ Nega bizni tanlashadi?
     if (!tariffRegion) return await ctx.reply('❗️ Xizmat topilmadi.');
 
     // area / quantity ni ishonchli olish
-    const area = Number(order.area ?? order.quantity ?? 0);
+    // MAYDONNI TO‘G‘RI OLISh
+    const area = Number(String(order.quantity).trim());
+
+    // VALIDATSIYA
     if (isNaN(area) || area <= 0) {
-      await ctx.reply(
-        '❗️ Maydon (m²) noto‘g‘ri yoki bo‘sh. Iltimos qayta kiriting.',
-      );
+      await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
       return;
     }
 
-    // pricePerM2 ni son sifatida oling
-    const pricePerM2 = Number(tariffRegion.pricePerM2 ?? 0);
-    if (isNaN(pricePerM2) || pricePerM2 < 0) {
+    // TARIF NARXINI SON SIFATIDA OLISh
+    const pricePerM2 = Number(tariffRegion.pricePerM2);
+
+    if (isNaN(pricePerM2) || pricePerM2 <= 0) {
       await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
       return;
     }
 
-    // hisoblash va yaxlitlash (agar kerak bo‘lsa Math.round/Math.ceil)
+    // UMUMIY NARX HISOBI
     const totalPrice = Math.round(area * pricePerM2);
 
     const orderList = [
