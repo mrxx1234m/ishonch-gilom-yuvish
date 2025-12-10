@@ -556,7 +556,9 @@ Nega bizni tanlashadi?
         }
 
         // Bu yerda buyurtmani saqlash funksiyasini chaqiramiz
-        await this.saveOrder(ctx, order);
+        // Bu yerda orderni emas, session.orderni jo‘natamiz
+        await this.saveOrder(ctx, ctx.session.order);
+
         break;
 
       /** STEP 5: COMMENT & CONFIRMATION */
