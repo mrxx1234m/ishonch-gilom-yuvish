@@ -362,7 +362,10 @@ Nega bizni tanlashadi?
 
     // TARIF REGION
     const tariffRegion = await this.prisma.tariffRegion.findFirst({
-      where: { regionId: order.regionId },
+      where: {
+        regionId: order.regionId,
+        tariffId: order.tariffId,
+      },
       include: { tariff: true },
     });
 
@@ -373,25 +376,21 @@ Nega bizni tanlashadi?
 
     // hisoblash pricePerM2 * area
     // MAYDONNI TO‘G‘RI OLISh
-    const area = Number(String(order.quantity).trim());
-
-    // VALIDATSIYA
-    if (isNaN(area) || area <= 0) {
-      await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
+    const area = Number(order.quantity);
+    if (!area || isNaN(area)) {
+      await ctx.reply('❗️ Maydon noto‘g‘ri.');
       return;
     }
 
-    // TARIF NARXINI SON SIFATIDA OLISh
+    // NARX
     const pricePerM2 = Number(tariffRegion.pricePerM2);
-
-    if (isNaN(pricePerM2) || pricePerM2 <= 0) {
-      await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
+    if (!pricePerM2 || isNaN(pricePerM2)) {
+      await ctx.reply('❗️ Tarif narxi xato.');
       return;
     }
 
-    // UMUMIY NARX HISOBI
-    const totalPrice = Math.round(area * pricePerM2);
-
+    // TOTAL
+    const totalPrice = area * pricePerM2;
     // BUYURTMANI SAQLAYMIZ
     const createdOrder = await this.prisma.order.create({
       data: {
