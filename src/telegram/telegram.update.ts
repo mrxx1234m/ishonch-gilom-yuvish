@@ -311,7 +311,7 @@ Nega bizni tanlashadi?
       { text: r.name, callback_data: `region_${r.id}` },
     ]);
 
-    await ctx.reply(`Iltimos, xizmat turini tanlang! 👇🏻`, {
+    await ctx.reply(`Hududingizni tanglang! 👇🏻`, {
       reply_markup: { inline_keyboard: buttons },
     });
   }
