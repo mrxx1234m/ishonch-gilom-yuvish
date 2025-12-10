@@ -11,7 +11,6 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const nestjs_telegraf_1 = require("nestjs-telegraf");
 const telegram_update_1 = require("./telegram.update");
-const telegram_callback_handlers_1 = require("./telegram-callback.handlers");
 const google_sheets_module_1 = require("../google-sheets/google-sheets.module");
 const prisma_module_1 = require("../prisma/prisma.module");
 const telegram_service_1 = require("./telegram.service");
@@ -36,7 +35,7 @@ exports.TelegramModule = TelegramModule = __decorate([
                 }),
             }),
         ],
-        providers: [telegram_update_1.TelegramUpdate, telegram_callback_handlers_1.TelegramHandlers, telegram_service_1.TelegramService],
+        providers: [telegram_update_1.TelegramUpdate, telegram_service_1.TelegramService],
         exports: [telegram_service_1.TelegramService, telegram_update_1.TelegramUpdate]
     })
 ], TelegramModule);

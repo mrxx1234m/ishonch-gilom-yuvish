@@ -264,15 +264,31 @@ Nega bizni tanlashadi?
     if (!tariffRegions.length) {
       return await ctx.reply('Bu hudud va category uchun tariflar topilmadi.');
     }
+    category
+     if (
+       category == Services.BASSEYN ||
+       Services.PARDA == category ||
+       category == Services.BRUSCHATKA ||
+       category == Services.FASAD ||
+       category == Services.GILAM
+     ){
+      for (const tr of tariffRegions) {
+        let msg = `📌 *${tr.tariff.serviceName}*\n`;
+        msg += `🔰 Category: ${tr.tariff.category}\n`;
+        msg += `💵 Narx: *${tr.pricePerM2} so‘m/m²*\n`;
+        if (tr.tariff.description) msg += `📝 ${tr.tariff.description}`;
+        await ctx.reply(msg, { parse_mode: 'Markdown' });
+      }}else{
+        for (const tr of tariffRegions) {
+        let msg = `📌 *${tr.tariff.serviceName}*\n`;
+        msg += `🔰 Category: ${tr.tariff.category}\n`;
+        msg += `💵 Narx: *${tr.pricePerM2} so‘m dona\n`;
+        if (tr.tariff.description) msg += `📝 ${tr.tariff.description}`;
+        await ctx.reply(msg, { parse_mode: 'Markdown' });
 
-    for (const tr of tariffRegions) {
-      let msg = `📌 *${tr.tariff.serviceName}*\n`;
-      msg += `🔰 Category: ${tr.tariff.category}\n`;
-      msg += `💵 Narx: *${tr.pricePerM2} so‘m/m²*\n`;
-      if (tr.tariff.description) msg += `📝 ${tr.tariff.description}`;
-
-      await ctx.reply(msg, { parse_mode: 'Markdown' });
-    }
+      }
+       
+       }
   }
 
   /** BUYURTMA BOSHLASH */

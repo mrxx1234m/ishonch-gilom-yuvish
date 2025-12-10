@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
 import { TelegramUpdate } from './telegram.update';
-import { TelegramHandlers } from './telegram-callback.handlers';
 import { GoogleSheetsModule } from 'src/google-sheets/google-sheets.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { TelegramService } from './telegram.service';
@@ -26,7 +25,7 @@ const LocalSession = require('telegraf-session-local');
       }),
     }),
   ],
-  providers: [TelegramUpdate, TelegramHandlers,TelegramService],
+  providers: [TelegramUpdate,TelegramService],
   exports:[TelegramService,TelegramUpdate]
   
 })
