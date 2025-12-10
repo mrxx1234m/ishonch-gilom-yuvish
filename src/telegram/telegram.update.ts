@@ -163,8 +163,7 @@ Operatorlarimiz sizning murojaatingizni imkon qadar tezda ko‘rib chiqadi va yo
 
       const msg =
         `🆔 *Buyurtma ID:* ${order.id}\n` +
-        `📅 Sana: ${order.createdAt.toLocaleString('uz-UZ')}\n` +
-        `📌 Status: *${order.status}*\n\n` +
+        `📅 Sana: ${order.createdAt.toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' })}\n`+
         `🧾 Xizmatlar:\n${itemsText}\n` +
         `💰 *Jami:* ${total.toLocaleString()} so‘m\n`;
 
