@@ -273,20 +273,20 @@ Nega bizni tanlashadi?
        category == Services.GILAM
      ){
       for (const tr of tariffRegions) {
-        let msg = `📌 *${tr.tariff.serviceName}*\n`;
-        msg += `🔰 Category: ${tr.tariff.category}\n`;
-        msg += `💵 Narx: *${tr.pricePerM2} so‘m/m²*\n`;
-        if (tr.tariff.description) msg += `📝 ${tr.tariff.description}`;
-        await ctx.reply(msg, { parse_mode: 'Markdown' });
-      }}else{
+  let msg = `📌 *${tr.tariff.serviceName}*\n`;
+  msg += `🔰 Category: ${tr.tariff.category}\n`;
+  msg += `💵 Narx: *${tr.pricePerM2} so‘m/m²*\n`;
+  if (tr.tariff.description) msg += `📝 ${tr.tariff.description}`;
+  await ctx.reply(msg, { parse_mode: 'Markdown' });
+}
+      }else{
         for (const tr of tariffRegions) {
-        let msg = `📌 *${tr.tariff.serviceName}*\n`;
-        msg += `🔰 Category: ${tr.tariff.category}\n`;
-        msg += `💵 Narx: *${tr.pricePerM2} so‘m dona\n`;
-        if (tr.tariff.description) msg += `📝 ${tr.tariff.description}`;
-        await ctx.reply(msg, { parse_mode: 'Markdown' });
-
-      }
+          let msg = `📌 *${tr.tariff.serviceName}*\n`;
+          msg += `🔰 Category: ${tr.tariff.category}\n`;
+          msg += `💵 Narx: *${tr.pricePerM2} so‘m* dona\n`; // ⭐ YOPILDI
+          if (tr.tariff.description) msg += `📝 ${tr.tariff.description}`;
+          await ctx.reply(msg, { parse_mode: 'Markdown' });
+        }
        
        }
   }
