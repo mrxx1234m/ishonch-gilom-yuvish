@@ -486,7 +486,7 @@ Nega bizni tanlashadi?
         }
         order.quantity = quantity;
         order.step = 'awaiting_fullName'; // keyingi stepga o‘tish
-        await ctx.reply('To‘liq ism va familiyangizni kiriting:');
+        await ctx.reply('Ismingizni kiriting:');
         break;
       }
 
