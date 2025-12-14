@@ -14,6 +14,7 @@ const telegram_update_1 = require("./telegram.update");
 const google_sheets_module_1 = require("../google-sheets/google-sheets.module");
 const prisma_module_1 = require("../prisma/prisma.module");
 const telegram_service_1 = require("./telegram.service");
+const telegram_chanell_service_1 = require("./telegram-chanell.service");
 const LocalSession = require('telegraf-session-local');
 let TelegramModule = class TelegramModule {
 };
@@ -35,7 +36,7 @@ exports.TelegramModule = TelegramModule = __decorate([
                 }),
             }),
         ],
-        providers: [telegram_update_1.TelegramUpdate, telegram_service_1.TelegramService],
+        providers: [telegram_update_1.TelegramUpdate, telegram_service_1.TelegramService, telegram_chanell_service_1.TelegramServiceChanell],
         exports: [telegram_service_1.TelegramService, telegram_update_1.TelegramUpdate]
     })
 ], TelegramModule);

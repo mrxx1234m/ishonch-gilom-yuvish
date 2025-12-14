@@ -20,14 +20,17 @@ const google_sheets_service_1 = require("../google-sheets/google-sheets.service"
 const prisma_service_1 = require("../prisma/prisma.service");
 const telegraf_1 = require("telegraf");
 const telegraf_2 = require("telegraf");
+const telegram_chanell_service_1 = require("./telegram-chanell.service");
 let TelegramUpdate = class TelegramUpdate {
     prisma;
     bot;
     googleSheets;
-    constructor(prisma, bot, googleSheets) {
+    telegramChanellService;
+    constructor(prisma, bot, googleSheets, telegramChanellService) {
         this.prisma = prisma;
         this.bot = bot;
         this.googleSheets = googleSheets;
+        this.telegramChanellService = telegramChanellService;
     }
     async notifyUser(order) {
         if (!order?.user?.telegramId)
@@ -58,11 +61,11 @@ let TelegramUpdate = class TelegramUpdate {
         }
     }
     async start(ctx) {
-        await ctx.reply(` Assalomu alaykum, hurmatli mijoz! 🙂
+        await ctx.reply(` Assalomu alaykum, ${ctx.from?.first_name}! 🙂
 
-Sizni bizning xizmat botimizda ko‘rib turganimizdan xursandmiz.
+Xizmat botimizda ko‘rib turganimizdan xursandmiz.
 
-Xizmatlar bilan tanishish yoki buyurtma berish uchun  menyudan foydalaning 👇
+Buyurtma beish uchun menyudan foydalaning! 👇
 `, {
             reply_markup: {
                 inline_keyboard: [
@@ -104,7 +107,7 @@ Operatorlarimiz sizning murojaatingizni imkon qadar tezda ko‘rib chiqadi va yo
             return await ctx.reply('❗️ Sizda hali buyurtmalar mavjud emas.');
         }
         const orders = await this.prisma.order.findMany({
-            where: { userId: user.id },
+            where: { telegramId: telegramId },
             include: {
                 items: {
                     include: {
@@ -126,8 +129,7 @@ Operatorlarimiz sizning murojaatingizni imkon qadar tezda ko‘rib chiqadi va yo
                         ` — ${item.price.toLocaleString()} so‘m\n`;
             }
             const msg = `🆔 *Buyurtma ID:* ${order.id}\n` +
-                `📅 Sana: ${order.createdAt.toLocaleString('uz-UZ')}\n` +
-                `📌 Status: *${order.status}*\n\n` +
+                `📅 Sana: ${order.createdAt.toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' })}\n` +
                 `🧾 Xizmatlar:\n${itemsText}\n` +
                 `💰 *Jami:* ${total.toLocaleString()} so‘m\n`;
             await ctx.reply(msg, { parse_mode: 'Markdown' });
@@ -143,7 +145,7 @@ Operatorlarimiz sizning murojaatingizni imkon qadar tezda ko‘rib chiqadi va yo
         const buttons = regions.map((region) => [
             { text: region.name, callback_data: `prices_region_${region.id}` },
         ]);
-        await ctx.reply('Iltimos, hududni tanlang! 👇🏻', {
+        await ctx.reply('Hududingizni tanlang! 👇🏻', {
             reply_markup: {
                 inline_keyboard: buttons,
             },
@@ -200,13 +202,30 @@ Nega bizni tanlashadi?
         if (!tariffRegions.length) {
             return await ctx.reply('Bu hudud va category uchun tariflar topilmadi.');
         }
-        for (const tr of tariffRegions) {
-            let msg = `📌 *${tr.tariff.serviceName}*\n`;
-            msg += `🔰 Category: ${tr.tariff.category}\n`;
-            msg += `💵 Narx: *${tr.pricePerM2} so‘m/m²*\n`;
-            if (tr.tariff.description)
-                msg += `📝 ${tr.tariff.description}`;
-            await ctx.reply(msg, { parse_mode: 'Markdown' });
+        category;
+        if (category == client_1.Services.BASSEYN ||
+            client_1.Services.PARDA == category ||
+            category == client_1.Services.BRUSCHATKA ||
+            category == client_1.Services.FASAD ||
+            category == client_1.Services.GILAM) {
+            for (const tr of tariffRegions) {
+                let msg = `📌 *${tr.tariff.serviceName}*\n`;
+                msg += `🔰 Category: ${tr.tariff.category}\n`;
+                msg += `💵 Narx: *${tr.pricePerM2} so‘m/m²*\n`;
+                if (tr.tariff.description)
+                    msg += `📝 ${tr.tariff.description}`;
+                await ctx.reply(msg, { parse_mode: 'Markdown' });
+            }
+        }
+        else {
+            for (const tr of tariffRegions) {
+                let msg = `📌 *${tr.tariff.serviceName}*\n`;
+                msg += `🔰 Category: ${tr.tariff.category}\n`;
+                msg += `💵 Narx: *${tr.pricePerM2} so‘m* dona\n`;
+                if (tr.tariff.description)
+                    msg += `📝 ${tr.tariff.description}`;
+                await ctx.reply(msg, { parse_mode: 'Markdown' });
+            }
         }
     }
     async handleOrder(ctx) {
@@ -222,7 +241,7 @@ Nega bizni tanlashadi?
         const buttons = regions.map((r) => [
             { text: r.name, callback_data: `region_${r.id}` },
         ]);
-        await ctx.reply(`Iltimos, xizmat turini tanlang! 👇🏻`, {
+        await ctx.reply(`Hududingizni tanglang! 👇🏻`, {
             reply_markup: { inline_keyboard: buttons },
         });
     }
@@ -249,14 +268,27 @@ Nega bizni tanlashadi?
             where: { telegramId: String(ctx.from.id) },
         });
         const tariffRegion = await this.prisma.tariffRegion.findFirst({
-            where: { regionId: order.regionId },
+            where: {
+                regionId: order.regionId,
+                tariffId: order.tariffId,
+            },
             include: { tariff: true },
         });
         if (!tariffRegion) {
             await ctx.reply('❗ Tarif topilmadi.');
             return;
         }
-        const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+        const area = Number(order.quantity);
+        if (!area || isNaN(area)) {
+            await ctx.reply('❗️ Maydon noto‘g‘ri.');
+            return;
+        }
+        const pricePerM2 = Number(tariffRegion.pricePerM2);
+        if (!pricePerM2 || isNaN(pricePerM2)) {
+            await ctx.reply('❗️ Tarif narxi xato.');
+            return;
+        }
+        const totalPrice = area * pricePerM2;
         const createdOrder = await this.prisma.order.create({
             data: {
                 userId: user?.id,
@@ -264,6 +296,7 @@ Nega bizni tanlashadi?
                 fullName: order.fullName,
                 phone: order.phone,
                 comment: order.comment,
+                telegramId: String(ctx?.from.id),
                 regionId: order.regionId,
                 status: 'PENDING',
                 items: {
@@ -287,9 +320,10 @@ Nega bizni tanlashadi?
             tariffRegion.tariff.serviceName,
             order.quantity || 0,
             totalPrice,
-            new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent', })
+            new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
         ];
         await this.googleSheets.writeOrders(orderList);
+        await this.telegramChanellService.sendOrderListToChannel(orderList);
         await ctx.reply(`✅ Buyurtma saqlandi!\n\n` +
             `📌 Xizmat: *${tariffRegion.tariff.serviceName}*\n` +
             `💰 Narx: *${totalPrice} so‘m*\n` +
@@ -332,7 +366,7 @@ Nega bizni tanlashadi?
                 }
                 order.quantity = quantity;
                 order.step = 'awaiting_fullName';
-                await ctx.reply('To‘liq ism va familiyangizni kiriting:');
+                await ctx.reply('Ismingizni kiriting:');
                 break;
             }
             case 'awaiting_fullName':
@@ -380,7 +414,7 @@ Nega bizni tanlashadi?
                 else {
                     return await ctx.reply('❗️ Iltimos, manzilingizni kiriting yoki joylashuvingizni yuboring.');
                 }
-                await this.saveOrder(ctx, order);
+                await this.saveOrder(ctx, ctx.session.order);
                 break;
             case 'awaiting_comment': {
                 if (ctx.callbackQuery?.data === 'skip_comment') {
@@ -414,7 +448,17 @@ Nega bizni tanlashadi?
                 });
                 if (!tariffRegion)
                     return await ctx.reply('❗️ Xizmat topilmadi.');
-                const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+                const area = Number(String(order.quantity).trim());
+                if (isNaN(area) || area <= 0) {
+                    await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
+                    return;
+                }
+                const pricePerM2 = Number(tariffRegion.pricePerM2);
+                if (isNaN(pricePerM2) || pricePerM2 <= 0) {
+                    await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
+                    return;
+                }
+                const totalPrice = Math.round(area * pricePerM2);
                 if (order.category == client_1.Services.BASSEYN ||
                     client_1.Services.PARDA == order.category ||
                     order.category == client_1.Services.BRUSCHATKA ||
@@ -431,12 +475,14 @@ Nega bizni tanlashadi?
                     new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
                 ];
                 await this.googleSheets.writeOrders(orderList);
+                await this.telegramChanellService.sendOrderListToChannel(orderList);
                 const createdOrder = await this.prisma.order.create({
                     data: {
                         userId: user.id,
                         address: order.address,
                         fullName: order.fullName,
                         phone: order.phone,
+                        telegramId: String(ctx?.from.id),
                         comment: order.comment,
                         status: 'PENDING',
                         items: {
@@ -497,7 +543,17 @@ Nega bizni tanlashadi?
                 await ctx.reply('❗ Tarif yoki xizmat narxi topilmadi.');
                 return;
             }
-            const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+            const area = Number(String(order.quantity).trim());
+            if (isNaN(area) || area <= 0) {
+                await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
+                return;
+            }
+            const pricePerM2 = Number(tariffRegion.pricePerM2);
+            if (isNaN(pricePerM2) || pricePerM2 <= 0) {
+                await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
+                return;
+            }
+            const totalPrice = Math.round(area * pricePerM2);
             const orderList = [
                 order.fullName,
                 order.phone,
@@ -508,12 +564,14 @@ Nega bizni tanlashadi?
                 new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
             ];
             await this.googleSheets.writeOrders(orderList);
+            await this.telegramChanellService.sendOrderListToChannel(orderList);
             const createdOrder = await this.prisma.order.create({
                 data: {
                     userId: user.id,
                     address: order.address,
                     fullName: order.fullName,
                     phone: order.phone,
+                    telegramId: String(ctx?.from.id),
                     comment: null,
                     status: 'PENDING',
                     items: {
@@ -587,15 +645,15 @@ Nega bizni tanlashadi?
                 order.category == client_1.Services.FASAD ||
                 order.category == client_1.Services.GILAM) {
                 order.step = 'awaiting_quantity';
-                await ctx.reply('Gilam maydonini m² da kiriting:');
+                await ctx.reply(`Qancha kvadrat bor? Kiritinbg: `);
             }
             else if (order.category == client_1.Services.MEBEL) {
                 order.step = 'awaiting_quantity';
-                await ctx.reply(`Mebelingiz o‘rindiqlar soni bo‘yicha yuviladi. Buyurtma berayotganda nechta o‘rindiq borligini kiriting, bot shu asosida umumiy narxni avtomatik hisoblaydi. Bu aniq va shaffof hisob-kitobni ta’minlaydi.`);
+                await ctx.reply(`Nechta o'rindiq bor? Kiriting:`);
             }
             else {
                 order.step = 'awaiting_quantity';
-                await ctx.reply('Nechta dona? Kiriting:');
+                await ctx.reply('Nechta dona bor? Kiriting:');
             }
             return;
         }
@@ -626,7 +684,17 @@ Nega bizni tanlashadi?
         });
         if (!tariffRegion)
             return await ctx.reply('❗️ Xizmat topilmadi.');
-        const totalPrice = (order.quantity ?? 0) * tariffRegion.pricePerM2;
+        const area = Number(String(order.quantity).trim());
+        if (isNaN(area) || area <= 0) {
+            await ctx.reply('❗️ Maydon (m²) noto‘g‘ri. Iltimos qayta kiriting.');
+            return;
+        }
+        const pricePerM2 = Number(tariffRegion.pricePerM2);
+        if (isNaN(pricePerM2) || pricePerM2 <= 0) {
+            await ctx.reply('❗️ Tarif narxi noto‘g‘ri. Operator bilan bog‘laning.');
+            return;
+        }
+        const totalPrice = Math.round(area * pricePerM2);
         const orderList = [
             order.fullName,
             order.phone,
@@ -637,12 +705,14 @@ Nega bizni tanlashadi?
             new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
         ];
         await this.googleSheets.writeOrders(orderList);
+        await this.telegramChanellService.sendOrderListToChannel(orderList);
         const createdOrder = await this.prisma.order.create({
             data: {
                 userId: user.id,
                 address: order.address,
                 fullName: order.fullName,
                 phone: order.phone,
+                telegramId: String(ctx?.from.id),
                 status: 'PENDING',
                 items: {
                     create: [
@@ -749,6 +819,7 @@ exports.TelegramUpdate = TelegramUpdate = __decorate([
     __param(1, (0, nestjs_telegraf_1.InjectBot)()),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         telegraf_1.Telegraf,
-        google_sheets_service_1.GoogleSheetsService])
+        google_sheets_service_1.GoogleSheetsService,
+        telegram_chanell_service_1.TelegramServiceChanell])
 ], TelegramUpdate);
 //# sourceMappingURL=telegram.update.js.map

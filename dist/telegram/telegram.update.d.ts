@@ -2,6 +2,7 @@ import { GoogleSheetsService } from 'src/google-sheets/google-sheets.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Telegraf } from 'telegraf';
 import { Context } from 'telegraf';
+import { TelegramServiceChanell } from './telegram-chanell.service';
 export interface SessionData {
     order?: any;
     step?: string;
@@ -13,7 +14,8 @@ export declare class TelegramUpdate {
     private prisma;
     private bot;
     private readonly googleSheets;
-    constructor(prisma: PrismaService, bot: Telegraf<Context>, googleSheets: GoogleSheetsService);
+    private telegramChanellService;
+    constructor(prisma: PrismaService, bot: Telegraf<Context>, googleSheets: GoogleSheetsService, telegramChanellService: TelegramServiceChanell);
     notifyUser(order: any): Promise<void>;
     start(ctx: Context): Promise<void>;
     handleContactOperator(ctx: Context): Promise<void>;

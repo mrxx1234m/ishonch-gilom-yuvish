@@ -10,9 +10,9 @@ export declare class OrderService {
     create(dto: CreateOrderDto): Promise<{
         user: {
             id: number;
-            telegramId: string;
-            phone: string | null;
             fullName: string | null;
+            phone: string | null;
+            telegramId: string;
             createdAt: Date;
         } | null;
         items: ({
@@ -31,29 +31,30 @@ export declare class OrderService {
         } & {
             id: number;
             regionId: number;
-            orderId: number;
-            tariffId: number;
             area: number;
             price: number;
+            tariffId: number;
+            orderId: number;
         })[];
     } & {
         id: number;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        phone: string | null;
-        fullName: string | null;
-        createdAt: Date;
         userId: number | null;
         address: string | null;
+        fullName: string | null;
+        phone: string | null;
         comment: string | null;
+        telegramId: string | null;
         regionId: number | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
     }>;
     findAll(): Promise<{
         totalPrice: number;
         user: {
             id: number;
-            telegramId: string;
-            phone: string | null;
             fullName: string | null;
+            phone: string | null;
+            telegramId: string;
             createdAt: Date;
         } | null;
         items: ({
@@ -68,28 +69,29 @@ export declare class OrderService {
         } & {
             id: number;
             regionId: number;
-            orderId: number;
-            tariffId: number;
             area: number;
             price: number;
+            tariffId: number;
+            orderId: number;
         })[];
         id: number;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        phone: string | null;
-        fullName: string | null;
-        createdAt: Date;
         userId: number | null;
         address: string | null;
+        fullName: string | null;
+        phone: string | null;
         comment: string | null;
+        telegramId: string | null;
         regionId: number | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
     }[]>;
     findOne(id: number): Promise<{
         totalPrice: number;
         user: {
             id: number;
-            telegramId: string;
-            phone: string | null;
             fullName: string | null;
+            phone: string | null;
+            telegramId: string;
             createdAt: Date;
         } | null;
         items: ({
@@ -104,58 +106,61 @@ export declare class OrderService {
         } & {
             id: number;
             regionId: number;
-            orderId: number;
-            tariffId: number;
             area: number;
             price: number;
+            tariffId: number;
+            orderId: number;
         })[];
         id: number;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        phone: string | null;
-        fullName: string | null;
-        createdAt: Date;
         userId: number | null;
         address: string | null;
+        fullName: string | null;
+        phone: string | null;
         comment: string | null;
+        telegramId: string | null;
         regionId: number | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
     }>;
     remove(id: number): Promise<{
         id: number;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        phone: string | null;
-        fullName: string | null;
-        createdAt: Date;
         userId: number | null;
         address: string | null;
+        fullName: string | null;
+        phone: string | null;
         comment: string | null;
+        telegramId: string | null;
         regionId: number | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
     }>;
     updateStatus(id: number, dto: UpdateOrderStatusDto): Promise<{
         user: {
             id: number;
-            telegramId: string;
-            phone: string | null;
             fullName: string | null;
+            phone: string | null;
+            telegramId: string;
             createdAt: Date;
         } | null;
         items: {
             id: number;
             regionId: number;
-            orderId: number;
-            tariffId: number;
             area: number;
             price: number;
+            tariffId: number;
+            orderId: number;
         }[];
     } & {
         id: number;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        phone: string | null;
-        fullName: string | null;
-        createdAt: Date;
         userId: number | null;
         address: string | null;
+        fullName: string | null;
+        phone: string | null;
         comment: string | null;
+        telegramId: string | null;
         regionId: number | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
     }>;
     emitStatusChange(order: any): Promise<void>;
     getStatusMessage(order: any): string;

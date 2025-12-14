@@ -6,6 +6,7 @@ import { TelegramUpdate } from './telegram.update';
 import { GoogleSheetsModule } from 'src/google-sheets/google-sheets.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { TelegramService } from './telegram.service';
+import { TelegramServiceChanell } from './telegram-chanell.service';
 
 const LocalSession = require('telegraf-session-local');
 
@@ -25,7 +26,7 @@ const LocalSession = require('telegraf-session-local');
       }),
     }),
   ],
-  providers: [TelegramUpdate,TelegramService],
+  providers: [TelegramUpdate,TelegramService,TelegramServiceChanell],
   exports:[TelegramService,TelegramUpdate]
   
 })

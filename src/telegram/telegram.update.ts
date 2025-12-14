@@ -21,6 +21,7 @@ interface OrderSession {
 
 
 import { Context } from 'telegraf';
+import { TelegramServiceChanell } from './telegram-chanell.service';
 
 export interface SessionData {
   order?: any;
@@ -40,6 +41,7 @@ export class TelegramUpdate {
     private prisma: PrismaService,
     @InjectBot() private bot: Telegraf<Context>,
     private readonly googleSheets: GoogleSheetsService,
+    private telegramChanellService:TelegramServiceChanell
   ) {}
 
   async notifyUser(order: any) {
@@ -426,6 +428,10 @@ Nega bizni tanlashadi?
       new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
     ];
     await this.googleSheets.writeOrders(orderList);
+    await this.telegramChanellService.sendOrderListToChannel(orderList);
+
+
+    
 
     await ctx.reply(
       `✅ Buyurtma saqlandi!\n\n` +
@@ -640,6 +646,7 @@ Nega bizni tanlashadi?
           new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
         ];
         await this.googleSheets.writeOrders(orderList);
+        await this.telegramChanellService.sendOrderListToChannel(orderList);
 
         const createdOrder = await this.prisma.order.create({
           data: {
@@ -761,6 +768,7 @@ Nega bizni tanlashadi?
         new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
       ];
       await this.googleSheets.writeOrders(orderList);
+      await this.telegramChanellService.sendOrderListToChannel(orderList);
 
       // ORDER
       const createdOrder = await this.prisma.order.create({
@@ -955,6 +963,7 @@ Nega bizni tanlashadi?
       new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
     ];
     await this.googleSheets.writeOrders(orderList);
+    await this.telegramChanellService.sendOrderListToChannel(orderList);
 
     // ORDER
     const createdOrder = await this.prisma.order.create({
