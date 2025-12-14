@@ -27,21 +27,21 @@ export class TelegramServiceChanell {
       date,
     ] = orderList;
 
-    const text = `
-🛒 *Yangi buyurtma*
+ const text = `
+🛒 <b>Yangi buyurtma</b>
 
-👤 Ism: *${fullName}*
-📞 Telefon: *${phone}*
+👤 Ism: <b>${fullName}</b>
+📞 Telefon: <b>${phone}</b>
 📍 Manzil: ${address}
 📦 Kategoriya: ${category}
 🧹 Xizmat: ${serviceName}
 🔢 Miqdor: ${quantity}
-💰 Narx: *${totalPrice} so‘m*
+💰 Narx: <b>${totalPrice} so‘m</b>
 🕒 Sana: ${date}
 `;
 
     await this.bot.telegram.sendMessage(this.channelId, text, {
-      parse_mode: 'Markdown',
+      parse_mode: 'HTML',
     });
   }
 }
